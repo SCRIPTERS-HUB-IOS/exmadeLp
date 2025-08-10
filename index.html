@@ -1,27 +1,453 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>exmadeW</title>
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>exmadeW</title>
+<style>
+  /* Reset & base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #0a0a10;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    --brightness: 1;
+    --bg-color: rgba(10, 10, 16, 0.5);
+    --text-color: #ff1a1a;
+    --btn-bg: rgba(255, 26, 26, 0.35);
+    --btn-hover: rgba(255, 26, 26, 0.75);
+    --shadow-glow: #ff1a1a;
+    --ripple-color: rgba(255, 255, 255, 0.3);
+    filter: brightness(var(--brightness));
+    transition: background-color 0.4s ease, color 0.4s ease, filter 0.4s ease;
+  }
+  body.theme-gray-white {
+    --bg-color: rgba(240, 240, 240, 0.25);
+    --text-color: #222222;
+    --btn-bg: rgba(255, 255, 255, 0.3);
+    --btn-hover: rgba(220, 220, 220, 0.75);
+    --shadow-glow: #555555;
+    --ripple-color: rgba(50, 50, 50, 0.15);
+    background: #fafafa;
+    color: #222;
+  }
+  body.theme-blue-yellow {
+    --bg-color: rgba(0, 17, 34, 0.5);
+    --text-color: #ffff33;
+    --btn-bg: rgba(255, 255, 51, 0.35);
+    --btn-hover: rgba(255, 255, 51, 0.8);
+    --shadow-glow: #ffff33;
+    --ripple-color: rgba(255, 255, 0, 0.3);
+    background: #001122;
+    color: #ffff33;
+  }
+  #particleCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    background: #000;
+  }
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 420px;
+    margin: 4vh auto 6vh;
+    background: var(--bg-color);
+    border-radius: 30px;
+    padding: 2.5rem 2rem 3rem;
+    backdrop-filter: blur(30px);
+    box-shadow:
+      0 0 40px var(--shadow-glow),
+      inset 0 0 30px var(--shadow-glow);
+    color: var(--text-color);
+    user-select: none;
+  }
+  h1.logo-neon {
+    font-weight: 900;
+    font-size: 3.2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    text-shadow:
+      0 0 8px var(--text-color),
+      0 0 20px var(--text-color),
+      0 0 40px var(--text-color);
+  }
+  #page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: relative;
+  }
+  .btn {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border: none;
+    border-radius: 18px;
+    padding: 1rem 1.6rem;
+    background: var(--btn-bg);
+    color: var(--text-color);
+    box-shadow:
+      0 0 20px var(--shadow-glow);
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease,
+      color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  .btn:hover, .btn:focus {
+    background: var(--btn-hover);
+    box-shadow:
+      0 0 35px var(--shadow-glow),
+      0 0 60px var(--shadow-glow);
+    outline: none;
+  }
+  .btn.discord svg {
+    margin-right: 10px;
+    filter: drop-shadow(0 0 3px #3b6bb0);
+  }
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--ripple-color);
+    animation: rippleAnim 0.6s linear;
+    pointer-events: none;
+    transform: scale(0);
+    opacity: 0.7;
+    will-change: transform, opacity;
+    z-index: 10;
+  }
+  @keyframes rippleAnim {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  .brightness-container {
+    margin-top: 2.2rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-color);
+  }
+  .brightness-container label {
+    user-select: none;
+  }
+  .brightness-container input[type="range"] {
+    flex-grow: 1;
+    cursor: pointer;
+    -webkit-appearance: none;
+    height: 10px;
+    background: var(--btn-bg);
+    border-radius: 12px;
+    box-shadow: 0 0 15px var(--shadow-glow);
+    transition: background 0.3s ease;
+  }
+  .brightness-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: var(--text-color);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--shadow-glow);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .brightness-container input[type="range"]:focus {
+    outline: none;
+  }
+  .back-btn {
+    font-size: 1rem;
+    background: transparent;
+    box-shadow: none;
+    color: var(--text-color);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    align-self: flex-start;
+    padding-left: 0;
+  }
+  /* Page fade animation */
+  .fade-in {
+    animation: fadeInSlideUp 0.5s forwards;
+  }
+  .fade-out {
+    animation: fadeOutSlideDown 0.4s forwards;
+  }
+  @keyframes fadeInSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeOutSlideDown {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+  }
+  /* Responsive */
+  @media (max-width: 480px) {
+    main {
+      margin: 3vh 1rem 4vh;
+      width: calc(100% - 2rem);
+      padding: 2rem 1.5rem 2.5rem;
+    }
+    h1.logo-neon {
+      font-size: 2.4rem;
+    }
+  }
+</style>
 </head>
-<body>
-  <canvas id="particleCanvas"></canvas>
+<body class="theme-red-black">
+<canvas id="particleCanvas"></canvas>
+<main>
+  <h1 class="logo-neon">exmade</h1>
+  <div id="page-container"></div>
 
-  <main>
-    <h1 class="logo-neon">exmadeW</h1>
+  <div class="brightness-container">
+    <label for="brightness-slider">Brightness</label>
+    <input id="brightness-slider" type="range" min="0.5" max="1.5" step="0.01" value="1" />
+  </div>
+</main>
+<script>
+// ==== CONFIG & SELECTORS ====
 
-    <div id="page-container">
-      <!-- Pages dynamically rendered here -->
-    </div>
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+const pageContainer = document.getElementById('page-container');
+const brightnessSlider = document.getElementById('brightness-slider');
 
-    <div class="brightness-container">
-      <label for="brightnessSlider">Brightness</label>
-      <input type="range" id="brightnessSlider" min="50" max="150" value="100" />
-    </div>
-  </main>
+let w, h;
+function resize() {
+  w = window.innerWidth;
+  h = window.innerHeight;
+  canvas.width = w;
+  canvas.height = h;
+}
+resize();
+window.addEventListener('resize', resize);
 
-  <script src="js/script.js" defer></script>
+// ==== PARTICLES ====
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.radius = Math.random() * 2 + 1.5;
+    this.speedX = (Math.random() - 0.5) * 0.6;
+    this.speedY = (Math.random() - 0.5) * 0.6;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0) this.x = w;
+    else if (this.x > w) this.x = 0;
+    if (this.y < 0) this.y = h;
+    else if (this.y > h) this.y = 0;
+  }
+  draw() {
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 4);
+    gradient.addColorStop(0, 'rgba(255,0,0,0.85)');
+    gradient.addColorStop(1, 'rgba(255,0,0,0)');
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = 'rgba(255,0,0,0.9)';
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+let particles = [];
+function initParticles(count = 120) {
+  particles = [];
+  for (let i = 0; i < count; i++) particles.push(new Particle());
+}
+initParticles();
+
+function connectParticles(maxDist = 140) {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < maxDist) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255,0,0,${1 - dist / maxDist})`;
+        ctx.lineWidth = 1;
+        ctx.shadowColor = 'rgba(255,0,0,0.6)';
+        ctx.shadowBlur = 10;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, w, h);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  connectParticles();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ==== BRIGHTNESS SLIDER ====
+
+brightnessSlider.addEventListener('input', (e) => {
+  const value = e.target.value;
+  document.documentElement.style.setProperty('--brightness', value);
+});
+
+// ==== RIPPLE EFFECT ====
+
+function addRippleEffect(elem) {
+  elem.addEventListener('click', function (e) {
+    const oldRipple = this.querySelector('.ripple');
+    if (oldRipple) oldRipple.remove();
+
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    this.appendChild(ripple);
+
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
+}
+
+// ==== THEME SWITCHING & PAGE NAVIGATION ====
+
+const themes = ['red-black', 'gray-white', 'blue-yellow'];
+let currentThemeIndex = 0;
+
+function applyTheme(index) {
+  document.body.classList.remove(...themes.map(t => `theme-${t}`));
+  document.body.classList.add(`theme-${themes[index]}`);
+  currentThemeIndex = index;
+}
+
+function fadeOut(element, callback) {
+  element.classList.add('fade-out');
+  element.classList.remove('fade-in');
+  element.addEventListener('animationend', () => {
+    callback();
+    element.classList.remove('fade-out');
+    element.classList.add('fade-in');
+  }, { once: true });
+}
+
+function renderMainMenu() {
+  fadeOut(pageContainer, () => {
+    pageContainer.innerHTML = '';
+
+    const btnMethods = document.createElement('button');
+    btnMethods.textContent = 'Methods';
+    btnMethods.className = 'btn';
+    addRippleEffect(btnMethods);
+    btnMethods.addEventListener('click', () => renderMethodsPage());
+    pageContainer.appendChild(btnMethods);
+
+    const btnDiscord = document.createElement('a');
+    btnDiscord.href = 'https://discord.gg/skDSzwCScu';
+    btnDiscord.target = '_blank';
+    btnDiscord.className = 'btn discord';
+    btnDiscord.innerHTML = `
+      <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="20" height="20" fill="#3b6bb0" style="margin-right:10px; filter: drop-shadow(0 0 4px #3b6bb0);">
+        <path d="M297.216 243.2c-13.248 0-24 11.552-24 25.856 0 14.08 10.688 25.6 24 25.6 13.184 0 24-11.52 24-25.6 0-14.304-10.688-25.856-24-25.856zm146.624-52.8c-6.208-6.464-16-7.296-23.04-2.816-34.432 20.736-70.016 32.448-107.84 32.448-37.824 0-73.408-11.712-107.84-32.448-7.04-4.48-16.896-3.648-23.04 2.816-22.08 22.528-33.984 50.112-38.4 75.584-2.88 15.04-3.136 29.696-.96 43.84 28.288 21.12 69.44 34.048 111.04 34.048 42.048 0 83.008-13.024 111.04-34.048 2.176-14.144 1.92-28.8-.96-43.84-4.416-25.472-16.32-53.056-38.4-75.584zM210.048 298.496c-15.872 0-28.672-14.72-28.672-32.832s12.8-32.832 28.672-32.832c15.104 0 27.456 14.72 27.456 32.832s-12.352 32.832-27.456 32.832zm160 0c-15.872 0-28.672-14.72-28.672-32.832s12.8-32.832 28.672-32.832c15.104 0 27.456 14.72 27.456 32.832s-12.352 32.832-27.456 32.832z"/>
+      </svg>
+      Our Discord
+    `;
+    addRippleEffect(btnDiscord);
+    pageContainer.appendChild(btnDiscord);
+  });
+}
+
+function renderMethodsPage() {
+  fadeOut(pageContainer, () => {
+    pageContainer.innerHTML = '';
+
+    const backBtn = document.createElement('button');
+    backBtn.textContent = '← Back';
+    backBtn.className = 'btn back-btn';
+    addRippleEffect(backBtn);
+    backBtn.addEventListener('click', () => renderMainMenu());
+    pageContainer.appendChild(backBtn);
+
+    const methods = [
+      { name: 'Splunk', url: 'https://app.splunk.gg/u/exmadeGG' },
+      { name: 'Injuries', url: 'https://www.logged.tg/auth/exmade' },
+      { name: 'Cookie Bypasser', url: 'https://app.splunk.gg/u/exmadeGG' },
+      { name: 'Hyperlink Gen', url: 'https://dsprs.vercel.app/hyperlink' },
+    ];
+
+    methods.forEach(({ name, url }) => {
+      const btn = document.createElement('a');
+      btn.href = url;
+      btn.target = '_blank';
+      btn.className = 'btn';
+      btn.textContent = name;
+      addRippleEffect(btn);
+      pageContainer.appendChild(btn);
+    });
+  });
+}
+
+// ==== INIT ====
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderMainMenu();
+  applyTheme(0);
+
+  // Theme switcher button
+  const themeBtn = document.createElement('button');
+  themeBtn.textContent = 'Change Theme';
+  themeBtn.className = 'btn theme-switcher';
+  addRippleEffect(themeBtn);
+
+  themeBtn.addEventListener('click', () => {
+    const next = (currentThemeIndex + 1) % themes.length;
+    applyTheme(next);
+  });
+
+  document.querySelector('main').appendChild(themeBtn);
+});
+</script>
 </body>
 </html>
