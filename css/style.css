@@ -3,7 +3,12 @@
   box-sizing: border-box;
 }
 html, body {
-  margin: 0; padding: 0; height: 100%;
+  margin: 0; padding: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: linear-gradient(135deg, #0f0f0f 0%, #1c1c1c 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #eee;
@@ -20,20 +25,24 @@ html, body {
   filter: brightness(var(--brightness,1));
   transition: filter 0.4s ease;
 }
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  position: relative;
-  user-select: none;
+
+/* Canvas background fixed & full screen */
+#particleCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* Container */
+/* Main container */
 main {
   position: relative;
   z-index: 10;
-  width: 340px;
+  max-width: 380px;
+  width: 100%;
   background: var(--primary-glass);
   border-radius: 24px;
   border: 1.5px solid var(--primary-border);
@@ -48,7 +57,8 @@ main {
   align-items: center;
   gap: 2.5rem;
   overflow: visible;
-  transition: background 0.4s ease, border-color 0.4s ease;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Title */
@@ -266,7 +276,7 @@ input[type="range"]::-moz-range-thumb {
 @media (max-width: 400px) {
   main {
     width: 90vw;
-    padding: 2rem 1.5rem 3rem;
+    padding: 2rem 1rem 3rem;
   }
   h1 {
     font-size: 2.4rem;
