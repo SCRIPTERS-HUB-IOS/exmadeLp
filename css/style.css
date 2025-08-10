@@ -9,21 +9,26 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1c1c1c 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-start, #0f0f0f) 0%, var(--bg-gradient-end, #1c1c1c) 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #eee;
+  color: var(--btn-color, #eee);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  filter: brightness(var(--brightness,1));
+  transition: filter 0.4s ease, color 0.6s ease, background 0.6s ease;
+  --bg-gradient-start: #0f0f0f;
+  --bg-gradient-end: #1c1c1c;
   --primary-glass: rgba(255 255 255 / 0.06);
   --primary-border: rgba(255 255 255 / 0.15);
+  --btn-bg-light: rgba(255 255 255 / 0.12);
+  --btn-bg-dark: rgba(0 0 0 / 0.2);
+  --btn-border: rgba(255 255 255 / 0.15);
+  --btn-color: #fafafa;
+  --btn-glow: #fff;
   --highlight-glow: #e0e0e0;
   --highlight-glow2: #ffffffaa;
-  --btn-glass-light: rgba(255 255 255 / 0.12);
-  --btn-glass-dark: rgba(0 0 0 / 0.2);
-  --btn-glow-color: #fff;
-  filter: brightness(var(--brightness,1));
-  transition: filter 0.4s ease;
+  --logo-color: #ff2d2d;
 }
 
 /* Canvas background fixed & full screen */
@@ -59,6 +64,7 @@ main {
   overflow: visible;
   margin: 0 auto;
   box-sizing: border-box;
+  transition: background 0.6s ease, border-color 0.6s ease;
 }
 
 /* Title */
@@ -66,14 +72,15 @@ h1 {
   font-size: 3rem;
   font-weight: 900;
   letter-spacing: 0.12em;
-  color: #fafafa;
+  color: var(--btn-color);
   text-shadow:
-    0 0 8px #fafafa,
-    0 0 16px #fafafa44,
-    0 0 28px #fafafa33;
+    0 0 8px var(--btn-glow),
+    0 0 16px var(--btn-glow),
+    0 0 28px var(--btn-glow)33;
   margin: 0;
   user-select: none;
   text-align: center;
+  transition: color 0.6s ease, text-shadow 0.6s ease;
 }
 
 /* Buttons container */
@@ -90,13 +97,13 @@ h1 {
   font-size: 1.15rem;
   border-radius: 16px;
   padding: 1rem 0;
-  border: 1.75px solid var(--primary-border);
+  border: 1.75px solid var(--btn-border);
   background:
-    linear-gradient(145deg, var(--btn-glass-light), var(--primary-glass));
+    linear-gradient(145deg, var(--btn-bg-light), var(--primary-glass));
   box-shadow:
     inset 0 1.5px 2.5px rgba(255 255 255 / 0.35),
     0 0 12px rgba(255 255 255 / 0.1);
-  color: #fafafa;
+  color: var(--btn-color);
   cursor: pointer;
   user-select: none;
   text-align: center;
@@ -116,7 +123,7 @@ h1 {
 .btn:hover,
 .btn:focus {
   background:
-    linear-gradient(145deg, rgba(255 255 255 / 0.35), var(--btn-glass-light));
+    linear-gradient(145deg, rgba(255 255 255 / 0.35), var(--btn-bg-light));
   border-color: var(--highlight-glow2);
   color: #fff;
   box-shadow:
@@ -125,11 +132,13 @@ h1 {
   transform: scale(1.07);
   outline: none;
   z-index: 10;
+  transition: box-shadow 0.3s ease, transform 0.15s ease;
 }
 .btn:active {
   transform: scale(0.98);
   box-shadow:
     inset 0 0 14px rgba(255 255 255 / 0.9);
+  transition: transform 0.1s ease;
 }
 
 /* Glass button special Discord style */
@@ -188,6 +197,25 @@ h1 {
 .btn:hover::before,
 .btn:focus::before {
   transform: rotate(25deg) translateX(100%);
+}
+
+/* Ripple effect span */
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleEffect 600ms linear;
+  background-color: var(--btn-glow);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 
 /* Brightness slider */
@@ -261,15 +289,16 @@ input[type="range"]::-moz-range-thumb {
   left: 20px;
   font-weight: 900;
   font-size: 20px;
-  color: #e6e6e6;
+  color: var(--logo-color);
   text-shadow:
-    0 0 12px #fff,
-    0 0 25px #fff88f,
-    0 0 40px #fff88f88;
+    0 0 12px var(--logo-color),
+    0 0 25px var(--logo-color),
+    0 0 40px var(--logo-color)88;
   pointer-events: none;
   user-select: none;
   letter-spacing: 0.1em;
   z-index: 12;
+  transition: color 0.6s ease, text-shadow 0.6s ease;
 }
 
 /* Responsive */
@@ -284,4 +313,65 @@ input[type="range"]::-moz-range-thumb {
   .btn {
     font-size: 1rem;
   }
+}
+
+/* Theme classes */
+body.theme-red-black {
+  --bg-gradient-start: #0f0f0f;
+  --bg-gradient-end: #1c1c1c;
+  --primary-glass: rgba(255 255 255 / 0.06);
+  --primary-border: rgba(255 255 255 / 0.15);
+  --btn-bg-light: rgba(255 255 255 / 0.12);
+  --btn-bg-dark: rgba(0 0 0 / 0.2);
+  --btn-border: rgba(255 255 255 / 0.15);
+  --btn-color: #fafafa;
+  --btn-glow: #fff;
+  --highlight-glow: #e0e0e0;
+  --highlight-glow2: #ffffffaa;
+  --logo-color: #ff2d2d;
+}
+
+body.theme-gray-white {
+  --bg-gradient-start: #e0e0e0;
+  --bg-gradient-end: #f9f9f9;
+  --primary-glass: rgba(0 0 0 / 0.06);
+  --primary-border: rgba(0 0 0 / 0.12);
+  --btn-bg-light: rgba(0 0 0 / 0.12);
+  --btn-bg-dark: rgba(255 255 255 / 0.9);
+  --btn-border: rgba(0 0 0 / 0.2);
+  --btn-color: #1a1a1a;
+  --btn-glow: #444;
+  --highlight-glow: #999999;
+  --highlight-glow2: #888888aa;
+  --logo-color: #666666;
+}
+
+body.theme-blue-yellow {
+  --bg-gradient-start: #001f3f;
+  --bg-gradient-end: #004080;
+  --primary-glass: rgba(255 255 0 / 0.1);
+  --primary-border: rgba(255 255 0 / 0.3);
+  --btn-bg-light: rgba(255 255 0 / 0.2);
+  --btn-bg-dark: rgba(0 0 0 / 0.3);
+  --btn-border: rgba(255 255 0 / 0.4);
+  --btn-color: #ffff99;
+  --btn-glow: #ffff66;
+  --highlight-glow: #ffff99;
+  --highlight-glow2: #ffffccaa;
+  --logo-color: #ffff33;
+}
+
+/* Theme switcher button */
+.btn.theme-switcher {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 1.05rem;
+  background:
+    linear-gradient(145deg, var(--btn-bg-light), var(--primary-glass));
+  border: 1.75px solid var(--btn-border);
+  box-shadow:
+    inset 0 1.5px 3px rgba(255 255 255 / 0.35),
+    0 0 16px rgba(255 255 255 / 0.15);
+  transition: all 0.4s ease;
+  margin-top: 1rem;
 }
