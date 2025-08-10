@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>exmadeW</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <main role="main" aria-label="Main navigation">
+    <h1>exmadeW</h1>
+
+    <nav class="buttons" aria-label="Primary navigation">
+      <a href="methods.html" class="btn" role="button" tabindex="0">Methods</a>
+
+      <a
+        href="https://discord.gg/skDSzwCScu"
+        class="btn discord"
+        role="button"
+        target="_blank"
+        rel="noopener noreferrer"
+        tabindex="0"
+        aria-label="Our Discord"
+      >
+        <img
+          src="assets/discord-logo.svg"
+          alt="Discord logo"
+          aria-hidden="true"
+          draggable="false"
+        />
+        Our Discord
+      </a>
+    </nav>
+
+    <div class="brightness-container">
+      <label for="brightnessRange">Brightness</label>
+      <input
+        type="range"
+        id="brightnessRange"
+        min="50"
+        max="120"
+        value="100"
+        aria-valuemin="50"
+        aria-valuemax="120"
+        aria-valuenow="100"
+        aria-label="Brightness control slider"
+      />
+    </div>
+  </main>
+
+  <div class="logo-neon" aria-hidden="true">exmade</div>
+
+  <script src="js/brightness.js"></script>
+  <script src="js/particles.js"></script>
+</body>
+</html>
